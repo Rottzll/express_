@@ -24,6 +24,17 @@ app.use((req,res,next) => {
     }
 });
 
+//global view
+app.use( (req,res,next) => {
+    app.locals.isLogin = true;
+    next();
+});
+
+
+
+//이미지 등 불러오기
+app.use('/uploads', express.static('uploads'));
+
 
 app.get('/', (req, res) =>{
     res.send('hello express');
