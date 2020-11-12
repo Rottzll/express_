@@ -27,10 +27,9 @@ app.use((req,res,next) => {
 //global view
 app.use( (req,res,next) => {
     app.locals.isLogin = true;
+    app.locals.req_path = req.path;
     next();
 });
-
-
 
 //이미지 등 불러오기
 app.use('/uploads', express.static('uploads'));
@@ -53,7 +52,15 @@ function vipMW(req, res, next){
     next();
 }
 
+app.use((req, res, _) => {
+    res.status(404).render('common/404.html')
+});
+
+
+app.use( (err, req, res, _) => {
+    res.status(500).render('common/500.html')
+});
+
 app.listen( port , ()=>{
     console.log('Express listening on port', port);
-
 });
