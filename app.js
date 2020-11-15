@@ -3,64 +3,62 @@ const nunjucks = require('nunjucks');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 
-const admin = require('./routes/admin');
-const contacts = require('./routes/contacts');
+class App{
+    constructor() {
+        this.app = express();
 
-const app = express();
-const port = 3000;
+        this.setViewEngine();
 
-nunjucks.configure('template', {
-    autoescape : true,
-    express : app
-});
+        this.setMiddleWare();
 
-//미들웨어 셋팅
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extends : false}));
-app.use((req,res,next) => {
-    req.body={
+        this.setStatic();
 
+        this.setLoclas();
+
+        this.getRouting();
+
+        this.errHandler();
     }
-});
 
-//global view
-app.use( (req,res,next) => {
-    app.locals.isLogin = true;
-    app.locals.req_path = req.path;
-    next();
-});
+    setViewEngine() {
+        nunjucks.configure('template', {
+            autoescape : true,
+            express : this.app
+        });
+    }
 
-//이미지 등 불러오기
-app.use('/uploads', express.static('uploads'));
+    setStatic() {
+        this.app.use('/uplods', express.static('uplods'));
+    }
 
+    setLoclas() {
+        this.app.use( (req, res, next) => {
+            this.app.locals.isLogin = true;
+            this.app.locals.req_path = req.path;
+            next();
+        });
+    }
 
-app.get('/', (req, res) =>{
-    res.send('hello express');
-});
+    getRouting() {
+        this.app.use(require('./controller'))
+    }
 
-app.use('/admin', vipMW ,admin);
+    errHandler() {
+        this.app.use( (req,res, _) => {
+            res.status(404).render('common/404.html')
+        });
 
-app.use('/contacts', contacts);
+        this.app.use( (err, req, res, _) => {
+            res.status(500).render('common/500.html')
+        });
+    }
 
-app.get('/testing', (req, res) =>{
-    res.send('완료');
-});
+    setMiddleWare() {
+        this.app.use(logger('dev'));
+        this.app.use(bodyParser.json());
+        this.app.use(bodyParser.urlencoded({extended : false}));
+    }
 
-function vipMW(req, res, next){
-    console.log('최우선 미들웨어');
-    next();
 }
 
-app.use((req, res, _) => {
-    res.status(404).render('common/404.html')
-});
-
-
-app.use( (err, req, res, _) => {
-    res.status(500).render('common/500.html')
-});
-
-app.listen( port , ()=>{
-    console.log('Express listening on port', port);
-});
+module.exports = new App().app;
