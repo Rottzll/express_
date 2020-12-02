@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 
 const db = require('./models');
 
+
 class App{
     constructor() {
         this.app = express();
@@ -20,6 +21,8 @@ class App{
         this.setLoclas();
 
         this.getRouting();
+
+        this.status404();
 
         this.errHandler();
     }
@@ -47,12 +50,15 @@ class App{
         this.app.use(require('./controller'))
     }
 
-    errHandler() {
+    status404() {
         this.app.use( (req,res, _) => {
             res.status(404).render('common/404.html')
         });
+    }
 
-        this.app.use( (err, req, res, _) => {
+    errHandler() {
+        this.app.use( (err, req, res, next) => {
+            console.error(err.stack)
             res.status(500).render('common/500.html')
         });
     }
@@ -70,6 +76,7 @@ class App{
         })
         .then(() =>{
             console.log('DB Sync complete');
+            return db.sequelize.sync();
         })
         .catch(err =>{
             console.log('Unble to connect to the database:', err);
