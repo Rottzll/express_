@@ -9,7 +9,8 @@ function testMiddleWare(req, res, next){
 
 router.get('/products', ctrl.get_products);
 router.get('/products/write', ctrl.get_products_write);
-router.get('/products/write', ctrl.post_products_write);
+router.post('/products/write', ctrl.post_products_write);
+router.get('/product/detail/:id', ctrl.get_products_detail);
 
 module.exports = router;
 // admin url & 미들웨어
