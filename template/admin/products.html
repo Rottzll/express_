@@ -17,7 +17,7 @@
                 </a>
             </td>
             <td>
-                {{product.createdAt}}
+                {{ product.dateFormat( product.createdAt ) }}
             </td>
             <td>
                 <a href="#" class="btn btn-danger" onclick="return confirm('삭제하시겠습니까?')">삭제</a>

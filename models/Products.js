@@ -1,3 +1,6 @@
+const moment = require('moment')
+
+
 module.exports = (sequelize, DataTypes) => {
     const Products = sequelize.define('products',{
             id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -6,5 +9,11 @@ module.exports = (sequelize, DataTypes) => {
             description : { type: DataTypes.TEXT }
         }
     );
+
+    Products.prototype.dateFormat = (date) => (
+        moment(date).format('YYYY - MM - DD')
+    );
+
+
     return Products;
 }
